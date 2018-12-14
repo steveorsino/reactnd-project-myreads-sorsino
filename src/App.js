@@ -5,6 +5,8 @@ import './App.css';
 
 class BooksApp extends React.Component {
   state = {
+
+    books: [],
     /**
      * TODO: Instead of using this state variable to keep track of which page
      * we're on, use the URL in the browser's address bar. This will ensure that
@@ -12,6 +14,19 @@ class BooksApp extends React.Component {
      * pages, as well as provide a good URL they can bookmark and share.
      */
     showSearchPage: false
+  }
+
+  updateBook = (bookID) => {
+
+  }
+
+  componentDidMount() {
+    BooksAPI.getAll()
+      .then((books) => {
+        this.setState(() => ({
+          books
+        }))
+      })
   }
 
   render() {
@@ -46,7 +61,16 @@ class BooksApp extends React.Component {
             <div className="list-books-content">
               <div>
                 <BookShelf 
-                  title='Currently Reading'
+                  title='Currently Reading' 
+                  allBooks={this.state.books}
+                />
+                <BookShelf 
+                  title='Want to Read'
+                  allBooks={this.state.books}
+                />
+                <BookShelf 
+                  title='Read'
+                  allBooks={this.state.books}
                 />
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
@@ -200,6 +224,7 @@ class BooksApp extends React.Component {
             <div className="open-search">
               <button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
             </div>
+            <button onClick={() => {console.log(this.state.books)}}>Add a book</button>
           </div>
         )}
       </div>
