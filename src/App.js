@@ -7,79 +7,141 @@ import { Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 class BooksApp extends React.Component {
-  state = {
-    books: []
-  }
+	state = {
+		books: [],
+		queriedBooks: []
+	}
 
-  updateBooks = (id, val) => {
-    console.log('in App.js ' + id + ': ' + val );
-    this.setState((prevState) => ({
-      books: prevState.books.map((book) => {
-        if (book.id === id)
-          book.shelf = val;
-        return book;
-      })
-    }))
-  };
+	queryBooks = (query) => {
+		BooksAPI.search(query)
+			.then((books) => {
+				console.log('Queried books result '+books);
+				if (books !== undefined && books.length) {
+					this.setState(() => ({
+						queriedBooks: books
+					}))
+				} else {
+					this.setState(() => ({
+						queriedBooks: []
+					}))
+				}
+			}, reason => console.log(reason))
+						 
+	};
 
-  componentDidMount() {
-    BooksAPI.getAll()
-      .then((books) => {
-        this.setState(() => ({
-          books
-        }))
-      })
-  }
+	updateBooks = (id, val) => {
+		console.log('in App.js ' + id + ': ' + val );
+		this.setState((prevState) => ({
+			books: prevState.books.map((book) => {
+				if (book.id === id)
+					book.shelf = val;
+				return book;
+			})
+		}))
+	};
 
-  render() {
-    return (
-      <div className="app">
-        <Route path='/search' render={({ history }) => (
-          <SearchPage 
-            onClickBack={() => {
-              history.push('/')
-            }}
-          />
-        )} />
-        
-        <Route exact path='/' render={() => (
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
-            </div>
-            <div className="list-books-content">
-              <div>
-                <BookShelf
-                  title='Currently Reading'
-                  theseBooks={this.state.books.filter((book) => book.shelf === 'currentlyReading')}
-                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
-                />
-                <BookShelf
-                  title='Want to Read'
-                  theseBooks={this.state.books.filter((book) => book.shelf === 'wantToRead')}
-                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
-                />
-                <BookShelf
-                  title='Read'
-                  theseBooks={this.state.books.filter((book) => book.shelf === 'read')}
-                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
-                />
-                
-              </div>
-            </div>
-            <div className="open-search">
-              {/*<button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>*/}
-              <Link
-                to='/search'
-                className="open-search"
-              >
-              </Link>
-            </div>
-          </div>
-        )} />
-      </div>
-    )
-  }
+	addBooks = (id, val) => {
+		const books = this.state.books.filter(book => {
+			return book.id === id
+		});
+		console.log('In add Books' + books)
+		if (books.length) {
+			console.log('Already on a shelf')
+			this.setState((prevState) => ({
+				books: prevState.books.map((book) => {
+					if (book.id === id) {
+						book.shelf = val;
+						console.log(book)
+					}
+					return book;
+				}),
+				queriedBooks: prevState.queriedBooks.map((book) => {
+					if (book.id === id) {
+						book.shelf = val;
+						console.log(book)
+					}
+					return book;
+				})
+			}))
+		} else {
+			console.log('NOT on a shelf')
+			BooksAPI.get(id)
+				.then(book => {
+					console.log('Adding' + book)
+					this.setState((prevState) => ({
+						books:prevState.books.concat([book]),
+					}))
+				}).then(console.log(this.state.books))
+		}
+		console.log(this.state.books)
+	};
+
+	clearQuery = () => {
+		this.setState({queriedBooks: []})
+	}
+
+	componentDidMount() {
+		BooksAPI.getAll()
+			.then((books) => {
+				this.setState(() => ({
+					books
+				}))
+			})
+	}
+
+	render() {
+		return (
+			<div className="app">
+				<Route path='/search' render={({ history }) => (
+					<SearchPage 
+						onClickBack={() => {
+							history.push('/')
+						}}
+						handleUpdateBooks={(id,val) => this.addBooks(id, val)}
+						onQueryBooks={(query) => this.queryBooks(query) }
+						books={this.state.queriedBooks}
+					/>
+				)} />
+				
+				<Route exact path='/' render={() => (
+					<div className="list-books">
+						<div className="list-books-title">
+							<h1>MyReads</h1>
+						</div>
+						<div className="list-books-content">
+							<div>
+								<BookShelf
+									title='Currently Reading'
+									theseBooks={this.state.books.filter((book) => book.shelf === 'currentlyReading')}
+									showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
+								/>
+								<BookShelf
+									title='Want to Read'
+									theseBooks={this.state.books.filter((book) => book.shelf === 'wantToRead')}
+									showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
+								/>
+								<BookShelf
+									title='Read'
+									theseBooks={this.state.books.filter((book) => book.shelf === 'read')}
+									showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
+								/>
+								
+							</div>
+						</div>
+						<div className="open-search">
+							{/*<button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>*/}
+							<Link
+								to='/search'
+								className="open-search"
+								onClick={this.clearQuery}
+							>
+							</Link>
+						</div>
+					</div>
+				)} />
+			</div>
+		)
+	}
 }
 
 export default BooksApp

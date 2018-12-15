@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import * as BooksAPI from './BooksAPI';
+//import * as BooksAPI from './BooksAPI';
 import Book from './Book';
 
 class SearchPage extends Component {
-    state = {
-        books: []
-    }
-    componentDidMount() {
-        BooksAPI.getAll()
-          .then((books) => {
-            this.setState(() => ({
-              books
-            }))
-          })
-      }
+
+
+    handleSearch = (e) => {
+        const q = e.target.value;
+        // BooksAPI.search(e.target.value)
+        //     .then((books) => {
+        //     this.setState(() => ({
+        //         books
+        //         }))
+        //     })
+        this.props.onQueryBooks(q);
+    };
+
+    changedBookHandler = (id, val) => {
+        console.log('in SearchPage.js ' + id + ': ' + val );
+        this.props.handleUpdateBooks(id, val);
+    };
+
     render() {
         return (
             <div className="search-books">
@@ -32,23 +39,25 @@ class SearchPage extends Component {
                   However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
-                <input type="text" placeholder="Search by title or author"/>
+                <input onChange={(e) => this.handleSearch(e)} type="text" placeholder="Search by title or author"/>
 
               </div>
             </div>
             <div className="search-books-results">
               <ol className="books-grid">
-              {this.state.books.map((book, idx) => {
-                return (<li>
-                    <Book
-                        id={book ? book.id : idx}
-                        title={book ? book.title : 'undefined'}
-                        authors={book ? book.authors : []}
-                        thumbnail={book ? book.imageLinks.thumbnail : ''}
-                        changedBooks={(id, val) => this.changedBookHandler(id, val)}
-                    />
-                </li>)
-            })}
+                {this.props.books !== undefined ? this.props.books.map((book, idx) => {
+                    return (<li>
+                        <Book
+                            id={book ? book.id : idx}
+                            title={book ? book.title : 'undefined'}
+                            authors={(book && book.authors) ? book.authors : []}
+                            thumbnail={(book && book.imageLinks) ? book.imageLinks.thumbnail : ''}
+                            changedBooks={(id, val) => this.changedBookHandler(id, val)}
+                            shelf={ (book && book.shelf) ? book.shelf : 'none'}
+                        />
+                    </li>)
+                })
+                : []}
               </ol>
             </div>
           </div>
