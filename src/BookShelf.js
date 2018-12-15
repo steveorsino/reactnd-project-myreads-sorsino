@@ -18,9 +18,10 @@ class BookShelf extends Component {
                 <h2 className="bookshelf-title">{this.props.title}</h2>
                 <div className="bookshelf-books">
                 <ol className="books-grid">
-                    {this.props.theseBooks.map((book) => {
+                    {this.props.theseBooks.map((book, idx) => {
                         return (<li>
                             <Book
+                                id={book ? book.id : idx}
                                 title={book ? book.title : 'undefined'}
                                 authors={book ? book.authors : []}
                                 thumbnail={book ? book.imageLinks.thumbnail : ''}
