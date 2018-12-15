@@ -11,9 +11,16 @@ class BooksApp extends React.Component {
     books: []
   }
 
-  updateBook = (bookID) => {
-
-  }
+  updateBooks = (id, val) => {
+    console.log('in App.js ' + id + ': ' + val );
+    this.setState((prevState) => ({
+      books: prevState.books.map((book) => {
+        if (book.id === id)
+          book.shelf = val;
+        return book;
+      })
+    }))
+  };
 
   componentDidMount() {
     BooksAPI.getAll()
@@ -42,17 +49,20 @@ class BooksApp extends React.Component {
             </div>
             <div className="list-books-content">
               <div>
-                <BookShelf 
-                  title='Currently Reading' 
+                <BookShelf
+                  title='Currently Reading'
                   theseBooks={this.state.books.filter((book) => book.shelf === 'currentlyReading')}
+                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
                 />
-                <BookShelf 
+                <BookShelf
                   title='Want to Read'
                   theseBooks={this.state.books.filter((book) => book.shelf === 'wantToRead')}
+                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
                 />
-                <BookShelf 
+                <BookShelf
                   title='Read'
                   theseBooks={this.state.books.filter((book) => book.shelf === 'read')}
+                  showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
                 />
                 
               </div>

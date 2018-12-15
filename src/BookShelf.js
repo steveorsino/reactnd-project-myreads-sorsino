@@ -3,15 +3,11 @@ import Book from './Book'
 
 class BookShelf extends Component {
  
-    state = {
-        books: [...this.props.theseBooks]
-    }
 
-    componenetDidMount() {
-        // this.setState((prevState, props)=>{
-        //     return {books: []}
-        // })
-    }
+    changedBookHandler = (id, val) => {
+        console.log('in BookShelf.js ' + id + ': ' + val );
+        this.props.showNewShelfArrangement(id, val);
+    };
     render() {
         return (
             <div className="bookshelf">
@@ -25,6 +21,8 @@ class BookShelf extends Component {
                                 title={book ? book.title : 'undefined'}
                                 authors={book ? book.authors : []}
                                 thumbnail={book ? book.imageLinks.thumbnail : ''}
+                                shelf={book ? book.shelf : 'none'}
+                                changedBooks={(id, val) => this.changedBookHandler(id, val)}
                             />
                         </li>)
                     })}
