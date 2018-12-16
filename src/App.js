@@ -67,13 +67,13 @@ class BooksApp extends React.Component {
 			console.log('NOT on a shelf')
 			BooksAPI.get(id)
 				.then(book => {
-					console.log('Adding' + book)
+					book.shelf = val;
+					console.log('Adding ' + book.title +' to ' + book.shelf)
 					this.setState((prevState) => ({
-						books:prevState.books.concat([book]),
+						books: prevState.books.concat([book]),
 					}))
-				}).then(console.log(this.state.books))
+				})
 		}
-		console.log(this.state.books)
 	};
 
 	clearQuery = () => {

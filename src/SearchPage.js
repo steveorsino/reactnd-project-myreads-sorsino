@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-//import * as BooksAPI from './BooksAPI';
 import Book from './Book';
 
 class SearchPage extends Component {
@@ -8,12 +7,6 @@ class SearchPage extends Component {
 
     handleSearch = (e) => {
         const q = e.target.value;
-        // BooksAPI.search(e.target.value)
-        //     .then((books) => {
-        //     this.setState(() => ({
-        //         books
-        //         }))
-        //     })
         this.props.onQueryBooks(q);
     };
 
