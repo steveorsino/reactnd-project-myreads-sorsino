@@ -7,6 +7,7 @@ import { Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 class BooksApp extends React.Component {
+
 	state = {
 		books: [],
 		queriedBooks: []
@@ -15,9 +16,7 @@ class BooksApp extends React.Component {
 	queryBooks = (query) => {
 		BooksAPI.search(query)
 			.then((books) => {
-				console.log('Queried books result '+books);
 				if (books !== undefined && books.length) {
-					
 					for (let i = 0; i < this.state.books.length; ++i) {
 						for (let j = 0; j < books.length; ++ j) {
 							if (books[j].id === this.state.books[i].id) {
@@ -25,7 +24,6 @@ class BooksApp extends React.Component {
 							}
 						}
 					}
-
 					this.setState(() => ({
 						queriedBooks: books
 					}))
@@ -34,12 +32,10 @@ class BooksApp extends React.Component {
 						queriedBooks: []
 					}))
 				}
-			}, reason => console.log(reason))
-						 
+			}, reason => console.log(reason))		 
 	};
 
 	updateBooks = (id, val) => {
-		console.log('in App.js ' + id + ': ' + val );
 		this.setState((prevState) => ({
 			books: prevState.books.map((book) => {
 				if (book.id === id)
@@ -53,31 +49,25 @@ class BooksApp extends React.Component {
 		const books = this.state.books.filter(book => {
 			return book.id === id
 		});
-		console.log('In add Books' + books)
 		if (books.length) {
-			console.log('Already on a shelf')
 			this.setState((prevState) => ({
 				books: prevState.books.map((book) => {
 					if (book.id === id) {
 						book.shelf = val;
-						console.log(book)
 					}
 					return book;
 				}),
 				queriedBooks: prevState.queriedBooks.map((book) => {
 					if (book.id === id) {
 						book.shelf = val;
-						console.log('QuerriedBook Shelf ' + book.shelf)
 					}
 					return book;
 				})
 			}))
 		} else {
-			console.log('NOT on a shelf')
 			BooksAPI.get(id)
 				.then(book => {
 					book.shelf = val;
-					console.log('Adding ' + book.title +' to ' + book.shelf)
 					this.setState((prevState) => ({
 						books: prevState.books.concat([book]),
 					}))
@@ -104,14 +94,13 @@ class BooksApp extends React.Component {
 				<Route path='/search' render={({ history }) => (
 					<SearchPage 
 						onClickBack={() => {
-							history.push('/')
+							history.push('/');
 						}}
 						handleUpdateBooks={(id,val) => this.addBooks(id, val)}
-						onQueryBooks={(query) => this.queryBooks(query) }
+						onQueryBooks={(query) => this.queryBooks(query)}
 						books={this.state.queriedBooks}
 					/>
 				)} />
-				
 				<Route exact path='/' render={() => (
 					<div className="list-books">
 						<div className="list-books-title">
@@ -134,11 +123,9 @@ class BooksApp extends React.Component {
 									theseBooks={this.state.books.filter((book) => book.shelf === 'read')}
 									showNewShelfArrangement={(id, val) => this.updateBooks(id, val)}
 								/>
-								
 							</div>
 						</div>
 						<div className="open-search">
-							{/*<button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>*/}
 							<Link
 								to='/search'
 								className="open-search"
