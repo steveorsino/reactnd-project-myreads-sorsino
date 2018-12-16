@@ -39,6 +39,7 @@ class SearchPage extends Component {
             <div className="search-books-results">
               <ol className="books-grid">
                 {this.props.books !== undefined ? this.props.books.map((book, idx) => {
+                    console.log('results ' + book.shelf)
                     return (<li>
                         <Book
                             id={book ? book.id : idx}

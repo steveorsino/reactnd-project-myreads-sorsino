@@ -17,6 +17,15 @@ class BooksApp extends React.Component {
 			.then((books) => {
 				console.log('Queried books result '+books);
 				if (books !== undefined && books.length) {
+					
+					for (let i = 0; i < this.state.books.length; ++i) {
+						for (let j = 0; j < books.length; ++ j) {
+							if (books[j].id === this.state.books[i].id) {
+								books[j].shelf = this.state.books[i].shelf;
+							}
+						}
+					}
+
 					this.setState(() => ({
 						queriedBooks: books
 					}))
@@ -58,7 +67,7 @@ class BooksApp extends React.Component {
 				queriedBooks: prevState.queriedBooks.map((book) => {
 					if (book.id === id) {
 						book.shelf = val;
-						console.log(book)
+						console.log('QuerriedBook Shelf ' + book.shelf)
 					}
 					return book;
 				})
